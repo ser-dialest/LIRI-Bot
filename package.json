@@ -1,0 +1,26 @@
+{
+  "name": "LIRI-Bot",
+  "version": "1.0.0",
+  "description": "Language Interpretation and Recognition Interface: Command line Node.js app that searches for songs, performances, and films.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ser-dialest/LIRI-Bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ser-dialest/LIRI-Bot/issues"
+  },
+  "homepage": "https://github.com/ser-dialest/LIRI-Bot#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "dotenv": "^6.2.0",
+    "moment": "^2.24.0",
+    "node-spotify-api": "^1.0.7"
+  }
+}
