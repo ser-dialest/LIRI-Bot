@@ -1,19 +1,40 @@
+// Include requirements
 require("dotenv").config();
+var axios = require("axios");
+var moment = require("moment");
 var keys = require("./keys.js");
 
-var spotify = new Spotify(keys.spotify);
 
+// var spotify = new Spotify(keys.spotify);
 
+// Take in user input as the command
+var command = process.argv[2];
 
+// Command 1: concert-this
+// concert-this checks BANDSINTOWN to see if that band is playing anywhere
+if (command === "concert-this") {
 
-
+    var artist = process.argv.slice(3).join(" ");
+    // console.log(artist);
+    axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp")
+    .then(function (response) {
+        for (var i = 0; i < response.data.length; i++) {
+            var venue = response.data[i].venue;
+            console.log(venue.name + " - " + venue.city + ", " + venue.region);
+            console.log(moment(response.data[i].datetime).format('MMMM Do YYYY, h:mm a'));
+            console.log();
+        }
+    })
+    .catch(function (error) {
+        console.log("Either that band does not exist or it doesn't appear to be playing anywhere.");
+    });
+}
 // PSEUDO CODE!!!! And goals.
 
 // Argument 2 is gonna be the command. 
 // There are 4 commands
 
 // COmmand 1: Concert this
-//     Concert this checks BANDSINTOWN to see if that band is playing anywhere
 //     It pulls argument 3 and beyond to be the artist in thw query URL
 //     It will reach out to the API using AXIOS and the query URL provided
 //     It will respond with 
