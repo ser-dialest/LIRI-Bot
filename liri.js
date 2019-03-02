@@ -3,22 +3,26 @@ require("dotenv").config();
 var axios = require("axios");
 var moment = require("moment");
 var keys = require("./keys.js");
-
+var Spotify = require('node-spotify-api');
 
 // var spotify = new Spotify(keys.spotify);
 
 // Take in user input as the command
 var command = process.argv[2];
 
+// create search term from arguments 3 and on 
+var term = process.argv.slice(3).join(" ");
+
 // Command 1: concert-this
 // concert-this checks BANDSINTOWN to see if that band is playing anywhere
 if (command === "concert-this") {
-
-    var artist = process.argv.slice(3).join(" ");
-    // console.log(artist);
-    axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp")
+    
+    // use axios to search BANDSINTOWN for the search term
+    axios.get("https://rest.bandsintown.com/artists/" + term + "/events?app_id=" + keys.bands.id)
     .then(function (response) {
+        // iterate through all the concerts
         for (var i = 0; i < response.data.length; i++) {
+            // Show the name, city, and region (state in the US) of the venue and the time of the concert
             var venue = response.data[i].venue;
             console.log(venue.name + " - " + venue.city + ", " + venue.region);
             console.log(moment(response.data[i].datetime).format('MMMM Do YYYY, h:mm a'));
@@ -26,35 +30,50 @@ if (command === "concert-this") {
         }
     })
     .catch(function (error) {
+        // If there is an error, display the following user-friendly message
         console.log("Either that band does not exist or it doesn't appear to be playing anywhere.");
     });
 }
-// PSEUDO CODE!!!! And goals.
 
-// Argument 2 is gonna be the command. 
-// There are 4 commands
+// Command 2: spotify-this
+if (command === "spotify-this") {
+    // Import the spotify keys from .env
+    var spotify = new Spotify({
+      id: keys.spotify.id,
+      secret: keys.spotify.secret
+    });
+    // Verify there was a search term
+    if (term  === "") {
+        console.log("There was no search term, so we are Searching for \"The Sign\".");
+        term = "The Sign";
+    };
 
-// COmmand 1: Concert this
-//     It pulls argument 3 and beyond to be the artist in thw query URL
-//     It will reach out to the API using AXIOS and the query URL provided
-//     It will respond with 
-//         Venue name 
-//         Venue location
-//         Date of the event
-    
-// Command 2: Sootify this song
-//     3 argument and beyond is the song
-//     it will use node-spotify-api- mojo to grab info from spotify's api
-//     Gonna have to look up how touse that mojo
-//     Will need to pull the api key and secret code from keys, which pulls it from .env
-//     It provides
-//         Artist name
-//         song name
-//         link to preview the song on spotify
-//         the album name of the album
-//         (I don't think I want it in that order)
-//     if there is no argv3, it will give the Sign from Ace of Base (set search to that by default)
+    // Use the search method of the node-spotify-api module 
+    spotify.search({ type: 'track', query: term }, function(err, response) {
+        if (err) {
+            return console.log('Error occurred: ' + err);
+        }; 
+        
+        // The array for the response from spotify
+        var tracks = response.tracks.items;
+        // If there were no results, display the following message
+        if (tracks.length === 0) {
+            console.log("Either that song does not exist or it isn't known to Spotify.")
+        }
+        else {
+            // Otherwise, display results for all the responses
+            for (var i=0; i < tracks.length; i++) {
+                console.log(tracks[i].artists[0].name);
+                console.log(tracks[i].name);
+                console.log(tracks[i].preview_url);
+                console.log(tracks[i].album.name);
+                console.log();
+            };
+        };
+    });
 
+//     if there is no argv3, it will give the Sign from Ace of Base (set search to that by default)}
+}
 // Command 3: movie this
 //     Use axios and omdb api to access that database and find the arg 3+ movie
 //     SHows:
