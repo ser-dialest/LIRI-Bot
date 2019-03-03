@@ -177,7 +177,8 @@ function executeCommand() {
     if (command === "concert-this") { concertThis() }
     else if (command === "spotify-this-song") { spotifyThisSong() }
     else if (command === "movie-this") { movieThis() }
-    else if (command === "do-what-it-says") {doWhatItSays() };
+    else if (command === "do-what-it-says") {doWhatItSays() }
+    else { console.log("LIRI did not receive a functional command.") };
 }
 
 executeCommand();
