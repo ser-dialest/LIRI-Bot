@@ -31,11 +31,12 @@ if (command === "concert-this") {
     })
     .catch(function (error) {
         // If there is an error, display the following user-friendly message
-        console.log("Either that band does not exist or it doesn't appear to be playing anywhere.");
+        console.log("Either \"" + term + "\" is not a band or they don't appear to be playing anywhere.");
     });
 }
 
 // Command 2: spotify-this
+// spotify-this returns the name of the band, song, and album of the search term results as well as a URL to a preview of the track.
 if (command === "spotify-this") {
     // Import the spotify keys from .env
     var spotify = new Spotify({
@@ -44,6 +45,7 @@ if (command === "spotify-this") {
     });
     // Verify there was a search term
     if (term  === "") {
+        // There must be a search term, or spotify will throw a fit. I mean, um, an error.
         console.log("There was no search term, so we are Searching for \"The Sign\".");
         term = "The Sign";
     };
@@ -58,7 +60,7 @@ if (command === "spotify-this") {
         var tracks = response.tracks.items;
         // If there were no results, display the following message
         if (tracks.length === 0) {
-            console.log("Either that song does not exist or it isn't known to Spotify.")
+            console.log("Either \"" + term + "\" is not a song or it isn't known to Spotify.")
         }
         else {
             // Otherwise, display results for all the responses
@@ -71,21 +73,51 @@ if (command === "spotify-this") {
             };
         };
     });
-
-//     if there is no argv3, it will give the Sign from Ace of Base (set search to that by default)}
+};
+// Command 3: movie-this
+// movie this queries OMDB's API using axios
+if (command === "movie-this") {
+    if (term  === "") {
+        // There must be a search term, or spotify will throw a fit. I mean, um, an error.
+        console.log("There was no search term, so we are searching for \"Mr. Nobody\".");
+        term = "Mr. Nobody";
+    };
+    
+    // use axios to search BANDSINTOWN for the search term
+    axios.get("http://www.omdbapi.com/?apikey=" + keys.omdb.id + "&t=" + term)
+    .then(function (response) {
+        var movie = response.data;
+        if (movie.Response === "False") {
+            console.log("Either \"" + term + "\" is not a movie or it is not known to OMDB.")
+        }
+        else {
+            // Display title, year, ratings, country, plot, and actors
+            console.log(movie.Title);
+            console.log(movie.Year);
+            // function to find ratings from specific sources
+            var ratings = movie.Ratings;
+            function findRating(site) {
+                for (var i = 0; i < ratings.length; i++){
+                    if (ratings[i].Source === site) {
+                        console.log(site + ": " + ratings[i].Value);
+                    }
+                }
+            }
+            // Run function and display ratings
+            findRating('Internet Movie Database');
+            findRating('Rotten Tomatoes');
+            console.log(movie.Country);
+            console.log(movie.Language);
+            console.log(movie.Plot);
+            console.log(movie.Actors);
+        };
+    })
+    .catch(function (error) {
+        // If there is an error, display the following user-friendly message
+        // console.log("Either that movie does not exist or it is not known to OMDB.");
+        console.log(error);
+    });
 }
-// Command 3: movie this
-//     Use axios and omdb api to access that database and find the arg 3+ movie
-//     SHows:
-//         Totle
-//         Release Year
-//         IMDB rating
-//         Rotten tomatoes Rating
-//         Country of production
-//         LAnguage of movie
-//         Plot
-//         Actors in the movie
-//     Default to Mr. Nobody
 
 // Command 4: do-what it says
 //     Call text from Random.txt 
@@ -98,3 +130,8 @@ if (command === "spotify-this") {
 // JEFFREY BONUS
 //     Ask user if they would like to check performances for the artist after they songified a song
 //     Save the API keys for OMDB and BANDSINTOWN in the .env file as well (ast TAs to make sure that will be okay)
+
+
+
+
+
