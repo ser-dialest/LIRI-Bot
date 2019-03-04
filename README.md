@@ -11,6 +11,7 @@ The user will need to install the following NPM Modules as per the dependencies 
 * Axios
 * Moment
 * Spotify
+* Dotenv
 
 ## User Input
 
